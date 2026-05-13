@@ -1,0 +1,59 @@
+@startuml diagrama-de-implantacao
+title Diagrama de Implantação - Sistema de Gestão das Olimpíadas (SGO)
+
+node "Dispositivo do Usuário" as Disp {
+  artifact "Navegador Web" as Nav
+  artifact "App Mobile (Android/iOS)" as App
+}
+
+cloud "Internet" as Net
+
+node "Servidor de Borda\n(AWS CloudFront / Nginx)" as Edge {
+  component "Load Balancer" as LB
+  component "Firewall / WAF" as FW
+}
+
+node "Servidor de Aplicação\n(AWS EC2 - Linux Ubuntu)" as AppSrv {
+  artifact "Container Docker: API SGO" as ApiCont
+  component "Servidor Web\n(Gunicorn / Tomcat)" as WebSrv
+  component "Backend SGO\n(Python/Java)" as Backend
+}
+
+node "Servidor de Autenticação" as AuthSrv {
+  component "Serviço OAuth2 / JWT" as OAuth
+}
+
+node "Servidor de Banco de Dados\n(AWS RDS)" as DBSrv {
+  database "PostgreSQL\nsgo_db" as PG
+}
+
+node "Servidor de Cache" as CacheSrv {
+  database "Redis" as Redis
+}
+
+node "Servidor de Arquivos" as FileSrv {
+  artifact "AWS S3\n(relatórios, bandeiras)" as S3
+}
+
+node "Servidor de Notificações" as NotifSrv {
+  component "Serviço SMTP" as SMTP
+  component "Push Notification Service" as Push
+}
+
+' Conexões
+Nav --> Net : HTTPS
+App --> Net : HTTPS
+Net --> FW
+FW --> LB
+LB --> ApiCont : HTTP
+
+ApiCont --> WebSrv
+WebSrv --> Backend
+Backend --> OAuth : OAuth2/JWT
+Backend --> PG : JDBC/SQL (TCP 5432)
+Backend --> Redis : TCP 6379
+Backend --> S3 : HTTPS/REST
+Backend --> SMTP : SMTP/TLS
+Backend --> Push : HTTPS
+
+@enduml
