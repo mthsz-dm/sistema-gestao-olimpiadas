@@ -1,0 +1,91 @@
+@startuml diagrama-de-pacotes
+skinparam packageStyle folder
+title Diagrama de Pacotes - Sistema de Gestão das Olimpíadas (SGO)
+
+package "sgo" {
+
+  package "apresentacao" as p_apr {
+    [TelaCompeticao]
+    [TelaInscricao]
+    [TelaResultado]
+    [TelaRelatorio]
+    [TelaLogin]
+  }
+
+  package "controle" as p_ctrl {
+    [CompeticaoController]
+    [InscricaoController]
+    [LocalController]
+    [ResultadoController]
+    [RelatorioController]
+    [AutenticacaoController]
+  }
+
+  package "negocio" as p_neg {
+
+    package "competicao" {
+      [Competicao]
+      [Modalidade]
+    }
+
+    package "atleta" {
+      [Atleta]
+      [Inscricao]
+    }
+
+    package "pais" {
+      [Pais]
+    }
+
+    package "local" {
+      [Local]
+    }
+
+    package "resultado" {
+      [Resultado]
+      [Medalha]
+    }
+
+    package "relatorio" {
+      [RelatorioMedalhas]
+    }
+
+    package "seguranca" {
+      [Usuario]
+    }
+  }
+
+  package "persistencia" as p_per {
+    [CompeticaoDAO]
+    [AtletaDAO]
+    [InscricaoDAO]
+    [LocalDAO]
+    [ResultadoDAO]
+    [PaisDAO]
+    [UsuarioDAO]
+  }
+
+  package "infraestrutura" as p_inf {
+    [ConexaoBanco]
+    [GeradorPDF]
+    [Logger]
+    [Configuracao]
+  }
+
+  package "util" as p_util {
+    [DataUtil]
+    [Validador]
+    [Constantes]
+  }
+}
+
+' Dependências entre pacotes
+p_apr ..> p_ctrl : usa
+p_ctrl ..> p_neg : usa
+p_neg ..> p_per : usa
+p_per ..> p_inf : usa
+p_ctrl ..> p_util : usa
+p_neg ..> p_util : usa
+p_per ..> p_util : usa
+
+@enduml
