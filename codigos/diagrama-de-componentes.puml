@@ -1,0 +1,86 @@
+@startuml diagrama-de-componentes
+skinparam componentStyle rectangle
+title Diagrama de Componentes - Sistema de Gestão das Olimpíadas (SGO)
+
+package "Camada de Apresentação" {
+  [Interface Web] as IUWeb
+  [Interface Mobile] as IUMob
+}
+
+package "Camada de Aplicação" {
+  [API Gateway] as Gateway
+  [Autenticação] as Auth
+
+  package "Módulos de Negócio" {
+    [Módulo de Competições] as MCom
+    [Módulo de Inscrições] as MIns
+    [Módulo de Alocação] as MAloc
+    [Módulo de Resultados] as MRes
+    [Módulo de Relatórios] as MRel
+  }
+}
+
+package "Camada de Dados" {
+  database "Banco de Dados\nRelacional" as BD
+  [Serviço de Cache] as Cache
+  [Repositório de Arquivos] as Repo
+}
+
+package "Serviços Externos" {
+  [Serviço de Notificação] as Notif
+  [Serviço de Email] as Email
+}
+
+' Interfaces fornecidas/requeridas
+interface "IUsuario" as IUsr
+interface "ICompeticao" as ICom
+interface "IInscricao" as IIns
+interface "IAlocacao" as IAloc
+interface "IResultado" as IRes
+interface "IRelatorio" as IRel
+interface "IPersistencia" as IPer
+interface "INotificacao" as INot
+
+' Conexões da apresentação ao gateway
+IUWeb --> Gateway : HTTPS/REST
+IUMob --> Gateway : HTTPS/REST
+
+' Gateway aos módulos
+Gateway --> Auth
+Auth -( IUsr
+Gateway --> MCom
+MCom -( ICom
+Gateway --> MIns
+MIns -( IIns
+Gateway --> MAloc
+MAloc -( IAloc
+Gateway --> MRes
+MRes -( IRes
+Gateway --> MRel
+MRel -( IRel
+
+' Dependências entre módulos
+MIns ..> MCom : valida competição
+MAloc ..> MCom : aloca local
+MRes ..> MCom : registra resultado
+MRel ..> MRes : consulta medalhas
+
+' Módulos ao banco
+MCom --> IPer
+MIns --> IPer
+MAloc --> IPer
+MRes --> IPer
+MRel --> IPer
+IPer - BD
+IPer - Cache
+
+' Relatórios e arquivos
+MRel --> Repo : exporta PDF
+
+' Notificações externas
+MIns ..> INot
+MRes ..> INot
+INot - Notif
+Notif --> Email
+
+@enduml
