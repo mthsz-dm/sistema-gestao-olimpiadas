@@ -1,10 +1,11 @@
 # Sistema de Gestão das Olimpíadas (SGO)
 
-> **Trabalho 1 - Primeira Entrega - Projeto de Software**  
+> **Projeto de Software**  
 > **Curso:** Engenharia de Software — **PUC Minas**  
 > **Disciplina:** Projeto de Software (4º período)  
 > **Professor:** João Paulo Carneiro Aramuni
-> **Professor:** Nicolas Araújo e Matheus Dias
+> 
+> **Alunos:** Nicolas Araújo e Matheus Dias
 
 
 ---
